@@ -44,10 +44,10 @@ const EditTask = ({task, onEdit}) => {
             <Button onClick={() => setEdit(!edit)} >Edit</Button>
             {edit && (
                 <Dialog open={edit} onClose={() => setEdit(false)}>
-                    <DialogTitle>Edit Task</DialogTitle>
+                    <DialogTitle sx={{textAlign: "center", fontSize: "20px", fontWeight: "bold"}}>Edit Task</DialogTitle>
                     <DialogContent>
-                        <TextField label="Title" value={title} onChange={(e) => setTitle(e.target.value)} />
-                        <TextField label="Description" value={description} onChange={(e) => setDescription(e.target.value)} />
+                        <TextField label="Title" value={title} onChange={(e) => setTitle(e.target.value)} sx={{width: "100%", marginTop: "10px", marginBottom: "10px"}} />
+                        <TextField label="Description" value={description} onChange={(e) => setDescription(e.target.value)} sx={{width: "100%"}} />
                     </DialogContent>
                     <DialogActions>
                         <Button onClick={handleEdit}>Save</Button>

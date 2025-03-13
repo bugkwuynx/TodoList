@@ -56,7 +56,7 @@ const ShowTask = () => {
     return (
         <div style={{ margin: "20px", maxWidth: "800px", width: "100%", marginLeft: "auto", marginRight: "auto" }}>
             <AddTasks onAdd={handleAdd} />
-            <div style={{marginBottom: "20px"}}>
+            <div style={{marginBottom: "30px"}}>
                 <h1 style={{textAlign: "center"}}>Your Tasks</h1>
                 <List>
                     {taskList.map((task, index) => (

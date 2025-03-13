@@ -5,12 +5,11 @@ const CompleteTask = ({task}) => {
     const [completed, setCompleted] = useState(task.completed);
 
     const handleChange = async () => {
-        console.log(task);
         const updatedTask = {
             _id: task._id,
             title: task.title,
             description: task.description,
-            completed: !task.completed
+            completed: !completed
         }
         try {
             console.log(updatedTask);
