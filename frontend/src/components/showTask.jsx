@@ -29,6 +29,7 @@ const ShowTask = () => {
     useEffect(() => {
         const fetchTasks = async() => {
             try {
+                console.log(import.meta.env.VITE_LOCAL_URL);
                 const result = await fetch(`${import.meta.env.VITE_LOCAL_URL}/api/tasks`, {
                     method: "GET",
                     headers: {
