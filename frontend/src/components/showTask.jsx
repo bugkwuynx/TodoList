@@ -1,80 +1,76 @@
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemText from '@mui/material/ListItemText';
 import { useState, useEffect } from "react";
-import { List, ListItem, ListItemText } from "@mui/material";
-import EditTask from "./editTask";
-import CompleteTask from "./completeTask";
-import DeleteTask from "./deleteTask";
+import CompleteTask from './completeTask';
+import EditTask from './editTask';
+import DeleteTask from './deleteTask';
+import AddTasks from './addTasks';
 
-const ShowTask = ({ newTasks = [], onNewTasksChange }) => {
-    const [dbTasks, setDbTasks] = useState([]);
-    const [editingTask, setEditingTask] = useState(null);
+const ShowTask = () => {
+    const [taskList, setTaskList] = useState([]);
+
+    const handleEdit = (updatedTask) => {
+        setTaskList((prevTasks) =>
+            prevTasks.map(task => task._id === updatedTask._id ? updatedTask : task)
+        );      
+    }
+
+    const handleAdd = (newTask) => {
+        setTaskList((prevTasks) => [...prevTasks, newTask]);
+    }
+
+    const handleDelete = (taskId) => {
+        setTaskList((prevTasks) =>
+            prevTasks.filter(task => task._id !== taskId)
+        );
+    }
     
     useEffect(() => {
-        const fetchTasks = async () => {
+        const fetchTasks = async() => {
             try {
-                const response = await fetch(`${import.meta.env.VITE_LOCAL_URL}/api/tasks`, {
+                const result = await fetch(`${import.meta.env.VITE_LOCAL_URL}/api/tasks`, {
                     method: "GET",
                     headers: {
                         "Content-Type": "application/json"
                     }
                 });
-                const result = await response.json();
-                if (!response.ok) {
-                    throw new Error("Failed to fetch tasks");
+                if (!result.ok) {
+                    throw new Error('Failed to get tasks');
                 }
-                setDbTasks(result.data);
+                const response = await result.json();
+                console.log(response.data);
+                const res = Array.isArray(response.data) ? response.data : [];
+                setTaskList(res);
+                return {success: true, message: "Getting tasks sucessfully"};
             }
             catch (error) {
-                console.log(error);
+                console.error(error.message);
             }
-        };
+        }
+    
         fetchTasks();
     }, []);
-    
-    const handleDeleteTask = (taskOrId) => {
-        if (typeof taskOrId === 'string') {
-            // Handle deletion of existing task (by ID)
-            setDbTasks(dbTasks.filter(task => task._id !== taskOrId));
-        } else {
-            // Handle deletion of new task (by task object)
-            const updatedNewTasks = newTasks.filter(t => 
-                t.title !== taskOrId.title || t.description !== taskOrId.description
-            );
-            onNewTasksChange(updatedNewTasks);
-        }
-    };
-
-    const handleUpdateTask = (updatedTask) => {
-        setDbTasks(dbTasks.map(t => t._id === updatedTask._id ? updatedTask : t));
-    };
-
-    // Combine database tasks with new tasks
-    const allTasks = [...dbTasks, ...newTasks];
 
     return (
-        <div style={{ width: "600px", margin: "0 auto" }}>
-            <h2>Tasks</h2>
-            <List sx={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-                {Array.isArray(allTasks) && allTasks.map((task, index) => (
-                    <ListItem key={task._id || `new-${index}`} sx={{ display: "flex", flexDirection: "row", gap: "10px" }}>
-                        <ListItemText 
-                            primary={task.title} 
-                            secondary={task.description}
-                        />
-                        <CompleteTask task={task} />
-                        <DeleteTask task={task} onDelete={handleDeleteTask} />
-                        <EditTask task={task} onClose={() => setEditingTask(null)} onUpdate={handleUpdateTask} />
-                    </ListItem>
-                ))}
-            </List>
-            {editingTask && (
-                <EditTask
-                    task={editingTask}
-                    onClose={() => setEditingTask(null)}
-                    onUpdate={handleUpdateTask}
-                />
-            )}
+        <div style={{ margin: "20px", maxWidth: "800px", width: "100%", marginLeft: "auto", marginRight: "auto" }}>
+            <AddTasks onAdd={handleAdd} />
+            <div style={{marginBottom: "20px"}}>
+                <h1 style={{textAlign: "center"}}>Your Tasks</h1>
+                <List>
+                    {taskList.map((task, index) => (
+                        <ListItem key={task._id || index}>
+                            <ListItemText primary={task.title} secondary={task.description} />
+                            <CompleteTask task={task} />
+                            <EditTask task={task} onEdit={handleEdit} />
+                            <DeleteTask task={task} onDelete={handleDelete} />
+                        </ListItem>
+                    ))}
+                </List>
+            </div>
         </div>
     );
+    
 }
 
 export default ShowTask;
